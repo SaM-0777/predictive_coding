@@ -14,5 +14,6 @@ wheels/
 *.dSYM
 
 /data
+/models
 /cpp/outputs
 
