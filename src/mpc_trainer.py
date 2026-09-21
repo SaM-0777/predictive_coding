@@ -173,7 +173,7 @@ class PCTrainer:
             update_p = self.args.update_p_at == "all" or t == self.args.T - 1
             if update_p:
                 if self.args.max_grad_norm_p:
-                    torch.nn.utils.clip_grad_norm_(
+                    nn.utils.clip_grad_norm_(
                         self._weight_params(), self.args.max_grad_norm_p
                     )
                 self.optimizer_p.step()
