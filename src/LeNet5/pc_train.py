@@ -30,7 +30,7 @@ if __name__ == "__main__":
     model = PCModel().to(device)
     model.train()
 
-    args = PCTrainingArguments(
+    training_args = PCTrainingArguments(
         T=T,
         num_train_epochs=all_epoch,
         optimizer_x_kwargs={"lr": 0.2},
@@ -45,7 +45,7 @@ if __name__ == "__main__":
 
     trainer = PCTrainer(
         model=model,
-        args=args,
+        args=training_args,
         train_loader=train_loader,
         eval_loader=test_loader,
         loss_fn=CrossEntropyLoss(),
