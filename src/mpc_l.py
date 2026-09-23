@@ -77,5 +77,4 @@ class PCLayer(nn.Module):
             self._sample_x = False
 
         self._compute_energy(x_hat)
-        assert self._x is not None, "self._x has not been initialized yet"
-        return self._x
+        return x_hat

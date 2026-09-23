@@ -78,14 +78,14 @@ class PCAlexNet(nn.Module):
         self.avgpool = nn.AdaptiveAvgPool2d((6, 6))
 
         self.linear = nn.Sequential(
-            nn.Dropout(),
+            nn.Dropout(0),
             nn.Linear(
                 256 * 6 * 6,
                 4096,
             ),
             PCLayer(),
             nn.ReLU(),
-            nn.Dropout(),
+            nn.Dropout(0),
             nn.Linear(
                 4096,
                 4096,
