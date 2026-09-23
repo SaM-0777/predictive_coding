@@ -77,4 +77,5 @@ class PCLayer(nn.Module):
             self._sample_x = False
 
         self._compute_energy(x_hat)
-        return x_hat
+        assert self._x is not None, ""
+        return self._x
