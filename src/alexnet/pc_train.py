@@ -77,7 +77,7 @@ if __name__ == "__main__":
         T=T,
         num_train_epochs=epochs,
         # energy_coefficient=1.0,  # only if PCLayer energy is .mean(), its currently NOT mean
-        optimizer_x_kwargs={"lr": 0.2},
+        optimizer_x_kwargs={"lr": 0.1},
         optimizer_p_cls=torch.optim.Adam,
         # optimizer_p_kwargs={"lr": 2e-4},
         optimizer_p_kwargs={"lr": 1e-4, "weight_decay": 1e-4},
@@ -125,12 +125,3 @@ if __name__ == "__main__":
     plt.tight_layout()
     plt.show()
 
-"""
-I am working on a project to implement predictive coding in  ppo
-
-I have attached the PCLayer and PCTrainer class script 
-
-And right now I have implemented a ppo script to let an agent learn catcher gameplay and I hv attached the ppo script here too catcher.py
-
-currently in catcher.py I am using backpropagation but now I want to use predictive coding algorithm instead of back propagation
-"""
