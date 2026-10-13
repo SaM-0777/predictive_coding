@@ -718,6 +718,23 @@ class PCTrainer(object):
         else:
             unwrap_with = ""
         lr = [1.0 for i in range(50)]
+        
+        #print("\n=== optimizer_x parameters ===")
+        #for group in self._optimizer_x.param_groups:
+        #    for p in group["params"]:
+        #        for name, model_p in self._model.named_parameters():
+        #            if p is model_p:
+        #                print(name)
+
+        #print("\n=== optimizer_p parameters ===")
+        #for group in self._optimizer_p.param_groups:
+        #    for p in group["params"]:
+        #        for name, model_p in self._model.named_parameters():
+        #            if p is model_p:
+        #                print(name)
+        
+        weights_before_inference = self._weight_snapshot()
+        
         for t in t_iterator:
 
             # -> inference
@@ -857,6 +874,8 @@ class PCTrainer(object):
 
             # early_stop
             early_stop = eval(self._early_stop_condition)
+            
+            activations_before = self._activation_snapshot()
 
             # _optimizer_x: zero_grad
             if is_model_has_pc_layers:
@@ -927,6 +946,21 @@ class PCTrainer(object):
                                             * self._x_lr_amplifier
                                         )
 
+            print(f"\n[INFERENCE {t}] activation gradients")
+
+            for i, layer in enumerate(self.get_model_pc_layers()):
+                if layer._x is not None and layer._x.grad is not None:
+                    g = layer._x.grad.detach()
+
+                    print(
+                        f"  pc_{i}: "
+                        f"grad_mean_abs={g.abs().mean().item():.8e} "
+                        f"grad_max={g.abs().max().item():.8e} "
+                        f"grad_norm={g.norm().item():.8e}"
+                    )
+                else:
+                    print(f"  pc_{i}: grad=None")
+            
             # optimizer_p: step
             if (t in self._update_p_at) or (
                 early_stop and self._update_p_at_early_stop
@@ -1135,3 +1169,50 @@ class PCTrainer(object):
                 assert 0 <= t < T
 
         return indices
+
+    def _activation_snapshot(self):
+        """Snapshot all PCLayer latent activations."""
+        snapshot = {}
+
+        for i, layer in enumerate(self.get_model_pc_layers()):
+            if layer._x is not None:
+                snapshot[f"pc_{i}"] = layer._x.detach().clone()
+
+        return snapshot
+
+    def _log_activation_changes(self, before, after, step):
+        print(f"\n[INFERENCE {step}] activation changes")
+
+        for name in before:
+            delta = (after[name] - before[name]).detach()
+
+            print(
+                f"  {name}: "
+                f"mean_abs={delta.abs().mean().item():.8e} "
+                f"max_abs={delta.abs().max().item():.8e} "
+                f"norm={delta.norm().item():.8e}"
+            )
+
+    def _weight_snapshot(self):
+        snapshot = {}
+        for name, param in self._model.named_parameters():
+            # PCLayer activation states are NOT weights
+            if name.endswith("._x"):
+                continue
+            if param.requires_grad:
+                snapshot[name] = param.detach().clone()
+        return snapshot
+
+    def _log_weight_changes(self, before, after):
+        print("\n[LEARNING] weight changes")
+
+        for name in before:
+            delta = (after[name] - before[name]).detach()
+
+            print(
+                f"  {name}: "
+                f"mean_abs={delta.abs().mean().item():.8e} "
+                f"max_abs={delta.abs().max().item():.8e} "
+                f"norm={delta.norm().item():.8e}"
+            )
+

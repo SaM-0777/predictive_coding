@@ -162,6 +162,7 @@ class PCTrainer:
             if self.args.update_p_at == "all" or t == self.args.T - 1:
                 self.optimizer_p.zero_grad(set_to_none=True)
 
+            print(f"loss {losses["loss"]}")
             losses["loss"].backward()
 
             if self.args.max_grad_norm_x:

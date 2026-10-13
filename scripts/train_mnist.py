@@ -33,11 +33,11 @@ output_size = 10
 
 model = nn.Sequential(
     nn.Linear(input_size, hidden_size),
-    nn.ReLU(),
     PCLayer(),
+    nn.ReLU(),
     nn.Linear(hidden_size, hidden_size),
-    nn.ReLU(),
     PCLayer(),
+    nn.ReLU(),
     nn.Linear(hidden_size, output_size),
 )
 model.train()
