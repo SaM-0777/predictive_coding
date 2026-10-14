@@ -13,6 +13,8 @@ wheels/
 
 *.dSYM
 
+checkpoints/
+
 /data
 /models
 /cpp/outputs
