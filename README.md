@@ -1,6 +1,12 @@
-# Predictive Coding
+# Predictive Coding: Supervised Learning & Reinforcement Learning
 
-This repository contains PyTorch implementations of predictive-coding learning for supervised image classification and reinforcement learning. The MNIST model in [`src/pc_model.py`](src/pc_model.py) performs iterative activity inference through a convolutional network and applies local prediction-error updates to its parameters. The Catcher agent in [`src/pc_agent.py`](src/pc_agent.py) combines PPO rollout collection with predictive-coding inference and local parameter updates for the `PLE/Catcher` game environment.
+A PyTorch implementation of **Predictive Coding (PC)** exploring biologically plausible credit assignment across supervised image classification and deep reinforcement learning.
+
+This project implements the theoretical framework established by [Millidge et al. (2020) — Predictive Coding Approximates Backprop along Arbitrary Computation Graphs](https://www.google.com/search?q=https%3A%2F%2Farxiv.org%2Fabs%2F2006.04182), demonstrating how local, Hebbian-style learning rules operating via iterative energy minimization can approximate backpropagation. The repository includes:
+
+1. **Supervised Learning (`src/pc_model.py`)**: A multi-layer predictive coding network evaluated on MNIST, through iterative activation relaxation and local weight updates.
+2. **Reinforcement Learning (`src/pc_agent.py`)**: An experimental Proximal Policy Optimization (PPO) agent integrating predictive coding principles to train an actor-critic model on interactive environments like `Catcher-PLE-v0`.
+
 
 ## Repository setup
 
@@ -58,18 +64,36 @@ uv pip install "git+https://github.com/qlan3/gym-games.git"
 
 The `gym-games` package supplies the Gymnasium-compatible Pygame environments, including `Catcher-PLE-v0`, and declares its Pygame Learning Environment dependencies. Its setup instructions also specify platform prerequisites for Pygame.
 
-On macOS, install the SDL libraries and Pygame package listed by `gym-games`:
+### Environment Dependency: `gym-games` Setup
+Training on the `Catcher-PLE-v0` environment requires the [PyGame Learning Environment (PLE)](https://github.com/ntasfi/PyGame-Learning-Environment) and [gym-games](https://github.com/qlan3/gym-games). Follow these installation steps:
 
+#### Step 1: Install System Dependencies for Pygame
+
+* **Ubuntu / Debian Linux:**
+  ```bash
+  sudo apt-get update
+  sudo apt-get install -y python3-pygame libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev
+  pip install pygame==2.5.2
+  ```
+
+* **macOS (via Homebrew):**
 ```bash
 brew install sdl2 sdl2_image sdl2_mixer sdl2_ttf pkg-config
-uv pip install pygame==2.5.2
+pip install pygame==2.5.2
 ```
 
-On Ubuntu, install the system Pygame package and the matching Python package:
-
+#### Step 2: Install PyGame Learning Environment (PLE)
 ```bash
-sudo apt-get -y install python-pygame
-uv pip install pygame==2.5.2
+git clone https://github.com/ntasfi/PyGame-Learning-Environment.git
+cd PyGame-Learning-Environment
+pip install -e .
+cd ..
+```
+
+#### Step 3: Install MinAtar & `gym-games`
+```bash
+pip install minatar==1.0.15
+pip install git+https://github.com/qlan3/gym-games.git
 ```
 
 ### Run the Catcher trainer
@@ -102,3 +126,11 @@ uv run tensorboard --logdir runs
 
 The repository provides a single PyTorch codebase for studying predictive coding across two settings: MNIST classification with local layer updates and Catcher reinforcement learning with PPO-derived task signals. The MNIST path is available through `src.pc_model`, while `src.pc_agent` provides the Catcher training loop after installing the `gym-games` environment package and its Pygame prerequisites.
 
+---
+
+## References
+
+* Millidge, B., Tschantz, A., & Buckley, C. L. (2020). *Predictive Coding Approximates Backprop along Arbitrary Computation Graphs*. [arXiv:2006.04182](https://arxiv.org/abs/2006.04182).
+* Rao, R. P., & Ballard, D. H. (1999). *Predictive coding in the visual cortex: a functional interpretation of some extra-classical receptive-field effects*. Nature Neuroscience, 2(1), 79-87.
+* Schulman, J., Wolski, F., Dhariwal, P., Radford, A., & Klimov, O. (2017). *Proximal Policy Optimization Algorithms*. [arXiv:1707.06347](https://arxiv.org/abs/1707.06347).
+* Lan, Q. (2021). *gym-games: Collection of Reinforcement Learning environments*. [GitHub Repository](https://github.com/qlan3/gym-games).
